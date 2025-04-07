@@ -12,7 +12,7 @@ INTEGRITY = {"Low": 1, "Medium": 2, "High": 3}
 # Security log Function
 def add_log_event(user_id, event_data):
     with open("security_log.txt", "a") as log:
-        log.write(f"User: {user_id}, File: {event_data["file"]}, Action: {event_data["action"]}, Status:{event_data["status"]}\n")
+        log.write(f"User: {user_id}, File: {event_data["file"]}, Action: {event_data["action"]}, Status: {event_data["status"]}")
     
 # Security Check Function
 def check_access(user_id, file, action):
@@ -25,9 +25,16 @@ def check_access(user_id, file, action):
         add_log_event(user_id, {"file": file, "action": action, "status": "Denied"})
         return False
 
-# EXAMPLE
-event_data = {
-    "file": "security_log.txt",
-    "action": "write",
-    "status": "Denied"
-}
+# Log Reading Function
+def read_logs(user_id):
+    user_integrity = INTEGRITY.get(USERS[user_id]["integrity"], 1)
+    logs_integrity = INTEGRITY.get(FILES["security_log.txt"]["integrity"], 3)
+
+    if user_integrity >= logs_integrity:
+        print("Access Granted!")
+        with open("security_log.txt", "r") as log:
+            print(log.read())
+        return True
+    else:
+        add_log_event(user_id, {"file": "security_log.txt", "action": "read", "status": "Denied"})
+        return False
